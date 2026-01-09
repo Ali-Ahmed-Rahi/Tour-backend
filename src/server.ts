@@ -25,7 +25,7 @@ const startServer = async () => {
 
 startServer()
 
-
+// this is for server off efficiently without bejal
 process.on("SIGTERM", () => {
   console.log("SIGTERM signal received... server shuting down.. ⚙️",);
   if (server) {
@@ -44,7 +44,6 @@ process.on("unhandledRejection", (err) => {
   }
   process.exit(1)
 })
-
 
 
 process.on("uncaughtExceptionMonitor", (err) => {
