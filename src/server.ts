@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import { Server } from 'http';
 import app from './app';
 import { envVars } from './app/config/env';
+import { seedSuperAdmin } from './app/utils/seeSuperAdmin';
 
 
 let server: Server;
@@ -23,11 +24,14 @@ const startServer = async () => {
 
 }
 
-startServer()
+(async () => {
+  await startServer()
+  await seedSuperAdmin()
+})()
 
-
+// this is for server off efficiently without hesitating
 process.on("SIGTERM", () => {
-  console.log("SIGTERM signal received... server shuting down.. ⚙️",);
+  console.log("SIGTERM signal received... server shuting down... ⚙️",);
   if (server) {
     server.close(() => {
       process.exit(1)
@@ -35,8 +39,9 @@ process.on("SIGTERM", () => {
   }
   process.exit(1)
 })
+
 process.on("unhandledRejection", (err) => {
-  console.log("Unhandled Rejection detected... server shuting down.. ⚙️",err);
+  console.log("Unhandled Rejection detected... server shuting down.. ⚙️", err);
   if (server) {
     server.close(() => {
       process.exit(1)
@@ -44,11 +49,19 @@ process.on("unhandledRejection", (err) => {
   }
   process.exit(1)
 })
-
-
 
 process.on("uncaughtExceptionMonitor", (err) => {
-  console.log("Uncaught Exception detected... server shuting down.. ⚙️",err);
+  console.log("Uncaught Exception detected... server shuting down.. ⚙️", err);
+  if (server) {
+    server.close(() => {
+      process.exit(1)
+    })
+  }
+  process.exit(1)
+})
+
+process.on("SIGINT", (err) => {
+  console.log("SIGINT signal received... server shuting down.. ⚙️", err);
   if (server) {
     server.close(() => {
       process.exit(1)
